@@ -46,8 +46,10 @@ export default function App() {
   const { currentItem, changeItem } = useTabs(0, content);
 
   // useInput code here
-  const maxLen = (value) => !value.includes("@");
-  const name = useInput("useInput", maxLen);
+  const noAtSign = (value) => !value.includes("@");
+  const maxLen = (value) => value.length <= 10;
+  const name = useInput("less11", maxLen);
+  const sign = useInput("noAtSign", noAtSign);
 
   // useState code here
   const [item, setItem] = useState(1);
@@ -63,7 +65,8 @@ export default function App() {
       {/* useState code end */}
       <br />
       <br />
-      <input placeholder="Name" {...name} /* useInput here */ />
+      <input placeholder="less11" {...name} /* useInput here */ />
+      <input placeholder="noAtSign" {...sign} /* useInput here */ />
       <br />
       <br />
       {/* useTabs code start here */}
