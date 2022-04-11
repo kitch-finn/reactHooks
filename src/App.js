@@ -42,29 +42,31 @@ const useInput = (initialValue, validator) => {
 };
 
 export default function App() {
+  // useTabs code here
   const { currentItem, changeItem } = useTabs(0, content);
-  // useInput code start here
+
+  // useInput code here
   const maxLen = (value) => !value.includes("@");
   const name = useInput("useInput", maxLen);
-  // useInput end
 
-  // useState code start here
+  // useState code here
   const [item, setItem] = useState(1);
   const incrementItem = () => setItem(item + 1);
   const decrementItem = () => setItem(item - 1);
-  // useState end
 
   return (
     <div className="App">
-      <h1>State is Here {item}</h1>
+      <h1>State is Here {item /* useState code start here */}</h1>
       <h2>Start editing to see some magic happen!</h2>
       <button onClick={incrementItem}> increment </button>
       <button onClick={decrementItem}> decrement </button>
+      {/* useState code end */}
       <br />
       <br />
       <input placeholder="Name" {...name} /* useInput here */ />
       <br />
       <br />
+      {/* useTabs code start here */}
       <div>
         {content.map((section, index) => (
           <button onClick={() => changeItem(index)} key={index}>
@@ -73,6 +75,7 @@ export default function App() {
         ))}
         <div>{currentItem.content}</div>
       </div>
+      {/* useTabs code end */}
     </div>
   );
 }
