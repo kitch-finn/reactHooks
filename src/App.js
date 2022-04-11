@@ -3,6 +3,27 @@ import "./styles.css";
 import { useState } from "react";
 import ReactDOM from "react-dom";
 
+const content = [
+  {
+    tab: "Section 1",
+    content: "This is content of useTabs Section 1"
+  },
+  {
+    tab: "Section 2",
+    content: "This is content of useTabs Section 2"
+  }
+];
+const useTabs = (initialTab, allTabs) => {
+  if (!allTabs || !Array.isArray(allTabs)) {
+    return;
+  }
+  const [currentIndex, setCurrentIndex] = useState(initialTab);
+  return {
+    currentItem: allTabs[currentIndex],
+    changeItem: setCurrentIndex
+  };
+};
+
 const useInput = (initialValue, validator) => {
   const [value, setValue] = useState(initialValue);
   const onChange = (event) => {
@@ -21,21 +42,37 @@ const useInput = (initialValue, validator) => {
 };
 
 export default function App() {
+  const { currentItem, changeItem } = useTabs(0, content);
+  // useInput code start here
   const maxLen = (value) => !value.includes("@");
-  const name = useInput("Mr.", maxLen);
+  const name = useInput("useInput", maxLen);
+  // useInput end
 
+  // useState code start here
   const [item, setItem] = useState(1);
   const incrementItem = () => setItem(item + 1);
   const decrementItem = () => setItem(item - 1);
+  // useState end
 
   return (
     <div className="App">
-      <h1>Hello {item}</h1>
+      <h1>State is Here {item}</h1>
       <h2>Start editing to see some magic happen!</h2>
       <button onClick={incrementItem}> increment </button>
       <button onClick={decrementItem}> decrement </button>
       <br />
-      <input placeholder="Name" {...name} />
+      <br />
+      <input placeholder="Name" {...name} /* useInput here */ />
+      <br />
+      <br />
+      <div>
+        {content.map((section, index) => (
+          <button onClick={() => changeItem(index)} key={index}>
+            {section.tab}
+          </button>
+        ))}
+        <div>{currentItem.content}</div>
+      </div>
     </div>
   );
 }
