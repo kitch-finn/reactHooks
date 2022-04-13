@@ -1,6 +1,6 @@
 import React from "react";
 import "./styles.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 
 const content = [
@@ -55,6 +55,13 @@ export default function App() {
   const [item, setItem] = useState(1);
   const incrementItem = () => setItem(item + 1);
   const decrementItem = () => setItem(item - 1);
+
+  // useEffect start
+  const sayHello = () => console.log("Hello");
+  useEffect(() => {
+    sayHello();
+  }, [item]);
+  // useEffect end
 
   return (
     <div className="App">
