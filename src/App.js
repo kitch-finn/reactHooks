@@ -3,6 +3,17 @@ import "./styles.css";
 import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 
+//////////////////////////////////////////////////////
+const useTitle = (initialTitle) => {
+  const [title, setTitle] = useState(initialTitle);
+  const updateTitle = () => {
+    const htmlTitle = document.querySelector("title");
+    htmlTitle.innerText = title;
+  };
+  useEffect(updateTitle, [title]);
+  return setTitle;
+};
+//////////////////////////////////////////////////////
 const content = [
   {
     tab: "Section 1",
@@ -23,7 +34,7 @@ const useTabs = (initialTab, allTabs) => {
     changeItem: setCurrentIndex
   };
 };
-
+//////////////////////////////////////////////////////
 const useInput = (initialValue, validator) => {
   const [value, setValue] = useState(initialValue);
   const onChange = (event) => {
@@ -42,6 +53,12 @@ const useInput = (initialValue, validator) => {
 };
 
 export default function App() {
+  // useTitle code here
+  const titleUpdater = useTitle("Loading...");
+  setTimeout(() => {
+    titleUpdater("Home");
+  }, 5000);
+
   // useTabs code here
   const { currentItem, changeItem } = useTabs(0, content);
 
