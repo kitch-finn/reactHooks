@@ -1,8 +1,31 @@
-import React from "react";
+import React, { useRef } from "react";
 import "./styles.css";
 import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 
+/////////////useRef, useClick///////////////////////
+const useClick = (onClick) => {
+  if (typeof onClick !== "function") {
+    return;
+  }
+  const element = useRef();
+  useEffect(() => {
+    // element.current가 마운트 되면 이벤트를 추가하고, 작동
+    // componentDidMount, DidUpdate일 때 호출
+    if (element.current) {
+      element.current.addEventListener("click", onClick);
+    }
+    // componentWillUnMount 될 때 호출
+    // component가 mount되지 않았을 때에는 EventListener가 없어야 하므로
+    return () => {
+      if (element.current) {
+        element.current.removeEventListener("click", onClick);
+      }
+    };
+  }, []);
+  // dependency []가 존재하면 componentDidMount 일 때 작동
+  return element;
+};
 //////////////////////////////////////////////////////
 const useTitle = (initialTitle) => {
   const [title, setTitle] = useState(initialTitle);
@@ -53,6 +76,10 @@ const useInput = (initialValue, validator) => {
 };
 
 export default function App() {
+  // useRef
+  const Hello = () => console.log("hello");
+  const title = useClick(Hello);
+
   // useTitle code here
   const titleUpdater = useTitle("Loading...");
   setTimeout(() => {
@@ -82,8 +109,9 @@ export default function App() {
 
   return (
     <div className="App">
-      <h1>State is Here {item /* useState code start here */}</h1>
+      <h1 ref={title}>Click and check console</h1>
       <h2>Start editing to see some magic happen!</h2>
+      <h3>State is Here {item /* useState code start here */}</h3>
       <button onClick={incrementItem}> increment </button>
       <button onClick={decrementItem}> decrement </button>
       {/* useState code end */}
@@ -103,6 +131,7 @@ export default function App() {
         <div>{currentItem.content}</div>
       </div>
       {/* useTabs code end */}
+      <br />
     </div>
   );
 }
