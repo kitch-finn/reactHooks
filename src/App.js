@@ -3,6 +3,30 @@ import "./styles.css";
 import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 
+/////////////////////usePreventLeave/////////////////////////
+const usePreventLeave = () => {
+  const listener = (event) => {
+    event.preventDefault();
+    event.returnValue = "";
+  };
+  const enablePrevent = () => window.addEventListener("beforeunload", listener);
+  const disablePrevent = () =>
+    window.removeEventListener("beforeunload", listener);
+  return { enablePrevent, disablePrevent };
+};
+
+/////////////////////useConfirm////////////////////////////
+const useConfirm = (message = "", onConfirm, onCancel) => {
+  if (!onConfirm || typeof onConfirm !== "function") return;
+  if (onCancel && typeof onCancel !== "function") return;
+  const confirmAction = () => {
+    if (confirm(message)) {
+      onConfirm();
+    } else onCancel();
+  };
+  return confirmAction;
+};
+
 /////////////useRef, useClick///////////////////////
 const useClick = (onClick) => {
   if (typeof onClick !== "function") {
@@ -76,8 +100,15 @@ const useInput = (initialValue, validator) => {
 };
 
 export default function App() {
-  // useRef
-  const Hello = () => console.log("hello");
+  const { enablePrevent, disablePrevent } = usePreventLeave();
+
+  // useConfirm
+  const deleteWorld = () => console.log("Deleting the World...");
+  const cancel = () => console.log("aborted");
+  const confirmDelete = useConfirm("Are you sure?", deleteWorld, cancel);
+
+  // useRef & useClick
+  const Hello = () => console.log("Click Title");
   const title = useClick(Hello);
 
   // useTitle code here
@@ -132,6 +163,15 @@ export default function App() {
       </div>
       {/* useTabs code end */}
       <br />
+      <button onClick={confirmDelete}>Delete the World</button>
+      <div>useConfirm</div>
+      <br />
+      <div className="App">
+        <button onClick={enablePrevent}>Protect</button>
+      </div>
+      <div className="App">
+        <button onClick={disablePrevent}>Unprotect</button>
+      </div>
     </div>
   );
 }
