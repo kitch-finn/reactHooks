@@ -3,7 +3,23 @@ import "./styles.css";
 import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 
-/////////////////////usePreventLeave/////////////////////////
+//// useBeforeLeave - 마우스가 브라우저 탭 부분으로 나갔을때 이벤트 동작 ////
+const useBeforeLeave = (onBefore) => {
+  if (typeof onBefore !== "function") return;
+  // 마우스포인트의 좌표에 따라 호출되는 이벤트 (이 경우, 브라우저의 윗 부분)
+  const handle = (event) => {
+    const { clientY } = event;
+    if (clientY <= 0) {
+      onBefore();
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("mouseleave", handle);
+    return () => document.removeEventListener("mouseleave", handle);
+  }, []);
+};
+
+////// usePreventLeave - 탭 또는 창을 닫을 때 이밴트 동작 //////
 const usePreventLeave = () => {
   const listener = (event) => {
     event.preventDefault();
@@ -15,7 +31,7 @@ const usePreventLeave = () => {
   return { enablePrevent, disablePrevent };
 };
 
-/////////////////////useConfirm////////////////////////////
+// useConfirm - confirm 창이 뜨는 이벤트, 상황에 따라 다른 이벤트 부여 가능 //
 const useConfirm = (message = "", onConfirm, onCancel) => {
   if (!onConfirm || typeof onConfirm !== "function") return;
   if (onCancel && typeof onCancel !== "function") return;
@@ -50,7 +66,7 @@ const useClick = (onClick) => {
   // dependency []가 존재하면 componentDidMount 일 때 작동
   return element;
 };
-//////////////////////////////////////////////////////
+//////////////////////useTitle///////////////////////////
 const useTitle = (initialTitle) => {
   const [title, setTitle] = useState(initialTitle);
   const updateTitle = () => {
@@ -60,7 +76,7 @@ const useTitle = (initialTitle) => {
   useEffect(updateTitle, [title]);
   return setTitle;
 };
-//////////////////////////////////////////////////////
+///////////////// useTabs - 탭에 따라 바뀌는 랜더링 ///////////////
 const content = [
   {
     tab: "Section 1",
@@ -81,7 +97,7 @@ const useTabs = (initialTab, allTabs) => {
     changeItem: setCurrentIndex
   };
 };
-//////////////////////////////////////////////////////
+/////////////// useInput - input창에 조건 추가하기 //////////////////
 const useInput = (initialValue, validator) => {
   const [value, setValue] = useState(initialValue);
   const onChange = (event) => {
@@ -100,6 +116,10 @@ const useInput = (initialValue, validator) => {
 };
 
 export default function App() {
+  const begForLife = () => console.log("Please, Don't leave");
+  useBeforeLeave(begForLife);
+
+  // usePreventLeave
   const { enablePrevent, disablePrevent } = usePreventLeave();
 
   // useConfirm
@@ -166,10 +186,9 @@ export default function App() {
       <button onClick={confirmDelete}>Delete the World</button>
       <div>useConfirm</div>
       <br />
-      <div className="App">
+      <div> usePreventLeave buttons </div>
+      <div>
         <button onClick={enablePrevent}>Protect</button>
-      </div>
-      <div className="App">
         <button onClick={disablePrevent}>Unprotect</button>
       </div>
     </div>
