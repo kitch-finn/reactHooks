@@ -3,7 +3,41 @@ import "./styles.css";
 import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 
-//// useBeforeLeave - 마우스가 브라우저 탭 부분으로 나갔을때 이벤트 동작 ////
+///// useNetwork - navigator on 또는 offline이 되는 것을 막아줌 //////
+const useNetwork = (onChange) => {
+  const [status, setStatus] = useState(navigator.onLine);
+  const handleChange = () => {
+    if (typeof onChange === "function") {
+      onChange(navigator.onLine);
+    }
+    setStatus(navigator.onLine);
+  };
+  useEffect(() => {
+    window.addEventListener("online", handleChange);
+    window.addEventListener("offline", handleChange);
+    () => {
+      window.removeEventListener("online", handleChange);
+      window.removeEventListener("offline", handleChange);
+    };
+  }, []);
+  return status;
+};
+
+//////////// useFadeIn - 컨텐츠를 서서히 fade in 시키기 ////////////
+const useFadeIn = (duration = 1, delay = 0) => {
+  if (typeof duration !== "number" || typeof delay !== "number") return;
+  const element = useRef();
+  useEffect(() => {
+    if (element.current) {
+      const { current } = element;
+      current.style.transition = `opacity ${duration}s ease-in-out ${delay}s`;
+      current.style.opacity = 1;
+    }
+  }, []);
+  return { ref: element, style: { opacity: 0 } };
+};
+
+//// useBeforeLeave - 마우스가 브라우저 밖으로 나갔을 때 이벤트 동작 ////
 const useBeforeLeave = (onBefore) => {
   if (typeof onBefore !== "function") return;
   // 마우스포인트의 좌표에 따라 호출되는 이벤트 (이 경우, 브라우저의 윗 부분)
@@ -116,6 +150,16 @@ const useInput = (initialValue, validator) => {
 };
 
 export default function App() {
+  // useNetwork
+  const handleNerworkChange = (online) =>
+    console.log(online ? "We just went online" : "We are offline");
+  const onLine = useNetwork(handleNerworkChange);
+
+  // useFadeIn
+  const fadeInH2 = useFadeIn(1, 2);
+  const fadeInP = useFadeIn(2, 4);
+
+  // useBeforeLeave
   const begForLife = () => console.log("Please, Don't leave");
   useBeforeLeave(begForLife);
 
@@ -191,6 +235,11 @@ export default function App() {
         <button onClick={enablePrevent}>Protect</button>
         <button onClick={disablePrevent}>Unprotect</button>
       </div>
+      <br />
+      <h2 {...fadeInH2}>useFadeIn-h2</h2>
+      <p {...fadeInP}>useFadeIn-p</p>
+      <br />
+      <h2>{onLine ? "online" : "offline"}</h2>
     </div>
   );
 }
