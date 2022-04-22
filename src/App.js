@@ -3,6 +3,22 @@ import "./styles.css";
 import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 
+///// useScroll - 특정 scrollY 좌표를 넘어갔을 때 이벤트 발생 //////
+const useScroll = () => {
+  const [state, setState] = useState({
+    x: 0,
+    y: 0
+  });
+  const onScroll = (event) => {
+    setState({ y: window.scrollY, x: window.scrollX });
+  };
+  useEffect(() => {
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  });
+  return state;
+};
+
 ///// useNetwork - navigator on 또는 offline이 되는 것을 막아줌 //////
 const useNetwork = (onChange) => {
   const [status, setStatus] = useState(navigator.onLine);
@@ -150,6 +166,8 @@ const useInput = (initialValue, validator) => {
 };
 
 export default function App() {
+  const { y } = useScroll();
+
   // useNetwork
   const handleNerworkChange = (online) =>
     console.log(online ? "We just went online" : "We are offline");
@@ -179,7 +197,7 @@ export default function App() {
   const titleUpdater = useTitle("Loading...");
   setTimeout(() => {
     titleUpdater("Home");
-  }, 5000);
+  }, 3000);
 
   // useTabs code here
   const { currentItem, changeItem } = useTabs(0, content);
@@ -191,7 +209,7 @@ export default function App() {
   const sign = useInput("noAtSign", noAtSign);
 
   // useState code here
-  const [item, setItem] = useState(1);
+  const [item, setItem] = useState(0);
   const incrementItem = () => setItem(item + 1);
   const decrementItem = () => setItem(item - 1);
 
@@ -240,6 +258,10 @@ export default function App() {
       <p {...fadeInP}>useFadeIn-p</p>
       <br />
       <h2>{onLine ? "online" : "offline"}</h2>
+      <br />
+      <div style={{ height: "500vh" }}>
+        <h2 style={{ color: y > 400 ? "red" : "blue" }}>useScroll</h2>
+      </div>
     </div>
   );
 }
