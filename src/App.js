@@ -3,6 +3,26 @@ import "./styles.css";
 import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 
+///// useFullscreen -  //////
+const useFullscreen = (callback) => {
+  const element = useRef();
+  const triggerFull = () => {
+    if (element.current) {
+      element.current.requestFullscreen();
+      if (callback && typeof callback === "function") {
+        callback(true);
+      }
+    }
+  };
+  const exitFull = () => {
+    document.exitFullscreen();
+    if (callback && typeof callback === "function") {
+      callback(false);
+    }
+  };
+  return { element, triggerFull, exitFull };
+};
+
 ///// useScroll - 특정 scrollY 좌표를 넘어갔을 때 이벤트 발생 //////
 const useScroll = () => {
   const [state, setState] = useState({
@@ -166,6 +186,13 @@ const useInput = (initialValue, validator) => {
 };
 
 export default function App() {
+  // useFullscreen
+  const onFullS = (isFull) => {
+    console.log(isFull ? "We are full" : "We are small");
+  };
+  const { element, triggerFull, exitFull } = useFullscreen(onFullS);
+
+  // useScroll
   const { y } = useScroll();
 
   // useNetwork
@@ -258,6 +285,13 @@ export default function App() {
       <p {...fadeInP}>useFadeIn-p</p>
       <br />
       <h2>{onLine ? "online" : "offline"}</h2>
+      <br />
+      <div ref={element}>
+        <img src="https://i.ibb.co/R6RwNxx/grape.jpg" alt="grape" width="250" />
+        <br />
+        <button onClick={triggerFull}>Make Fullscreen</button>
+        <button onClick={exitFull}>Exit Fullscreen</button>
+      </div>
       <br />
       <div style={{ height: "500vh" }}>
         <h2 style={{ color: y > 400 ? "red" : "blue" }}>useScroll</h2>
