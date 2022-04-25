@@ -3,7 +3,28 @@ import "./styles.css";
 import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 
-///// useFullscreen -  //////
+/// useNotification ///
+const useNotification = (title, options) => {
+  if (!("Notification" in window)) {
+    return;
+  }
+  const fireNotif = () => {
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          new Notification(title, options);
+        } else {
+          return;
+        }
+      });
+    } else {
+      new Notification(title, options);
+    }
+  };
+  return fireNotif;
+};
+
+///// useFullscreen - 이미지 풀스크린으로 보기 //////
 const useFullscreen = (callback) => {
   const element = useRef();
   const triggerFull = () => {
@@ -186,6 +207,11 @@ const useInput = (initialValue, validator) => {
 };
 
 export default function App() {
+  // useNotification
+  const triggerNotif = useNotification("Can I steal your Kimchi?", {
+    body: "I love kimchi dont you"
+  });
+
   // useFullscreen
   const onFullS = (isFull) => {
     console.log(isFull ? "We are full" : "We are small");
@@ -292,6 +318,8 @@ export default function App() {
         <button onClick={triggerFull}>Make Fullscreen</button>
         <button onClick={exitFull}>Exit Fullscreen</button>
       </div>
+      <br />
+      <button onClick={triggerNotif}>trigger Notification</button>
       <br />
       <div style={{ height: "500vh" }}>
         <h2 style={{ color: y > 400 ? "red" : "blue" }}>useScroll</h2>
