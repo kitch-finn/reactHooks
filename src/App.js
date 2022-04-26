@@ -2,8 +2,9 @@ import React, { useRef } from "react";
 import "./styles.css";
 import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
+import useAxios from "./useAxios";
 
-/// useNotification ///
+/// useNotification - 유저에게 알림 전송하기 ///
 const useNotification = (title, options) => {
   if (!("Notification" in window)) {
     return;
@@ -207,6 +208,14 @@ const useInput = (initialValue, validator) => {
 };
 
 export default function App() {
+  // useAxios
+  const { loading, error, data, refetch } = useAxios({
+    url: "https://yts.mx/api/v2/list_movies.json"
+  });
+  console.log(
+    `Loading: ${loading}\nError: ${error}\nData: ${JSON.stringify(data)}`
+  );
+
   // useNotification
   const triggerNotif = useNotification("Can I steal your Kimchi?", {
     body: "I love kimchi dont you"
@@ -320,6 +329,10 @@ export default function App() {
       </div>
       <br />
       <button onClick={triggerNotif}>trigger Notification</button>
+      <br />
+      <h2>{data && data.status}</h2>
+      <h2>{loading && "Loading"}</h2>
+      <button onClick={refetch}>Refetch</button>
       <br />
       <div style={{ height: "500vh" }}>
         <h2 style={{ color: y > 400 ? "red" : "blue" }}>useScroll</h2>
