@@ -1,8 +1,7 @@
 import React, { useRef } from "react";
 import "./styles.css";
 import { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
-import useAxios from "./useAxios";
+import useAxios from "../useAxios/useAxios";
 
 /// useNotification - 유저에게 알림 전송하기 ///
 const useNotification = (title, options) => {
